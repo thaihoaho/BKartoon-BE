@@ -35,6 +35,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+      
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, // Middleware cho Sanctum
             'throttle:api', // Middleware giới hạn số lần request API
             \Illuminate\Routing\Middleware\SubstituteBindings::class, // Middleware thay thế các binding trong route
