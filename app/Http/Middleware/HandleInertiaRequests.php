@@ -37,7 +37,9 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success')
             ],
- 
+            'api' => [
+                \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            ],
         ];
     }
 }

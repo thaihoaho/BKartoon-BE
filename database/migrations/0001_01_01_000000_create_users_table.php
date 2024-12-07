@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->unsignedInteger('reputation_score')->default(0);
+            $table->string('role')->default('user');
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
