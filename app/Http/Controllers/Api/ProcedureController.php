@@ -59,21 +59,29 @@ class ProcedureController extends Controller
             ], 500);
         }
     }
-    public function callGetFilmProcedure(Request $request)
+    public function callGetFilmsByCategory(Request $request)
     {
         try {
-            $result = DB::select("CALL GetFilmsByCategory(\"Sci-fi\");", [
+            $categoryName = $request->input('category_name', NULL);
+
+            $result = DB::select("CALL GetFilmsByCategory(:category_name);", [
+                'category_name' => $categoryName,
             ]);
-    
+            
+
             return response()->json([
                 'error' => false,
                 'message' => $result,
             ]);
         } catch (QueryException $e) {
 
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+
             return response()->json([
                 'error' => true,
-                'message' => $e->getMessage(),
+                'message' => $readableMessage,
             ], 500);
         }
     }
