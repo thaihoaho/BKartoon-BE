@@ -59,4 +59,22 @@ class ProcedureController extends Controller
             ], 500);
         }
     }
+    public function callGetFilmProcedure(Request $request)
+    {
+        try {
+            $result = DB::select("CALL GetFilmsByCategory(\"Sci-fi\");", [
+            ]);
+    
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
+        } catch (QueryException $e) {
+
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }    
