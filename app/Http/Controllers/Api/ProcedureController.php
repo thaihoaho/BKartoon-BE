@@ -59,6 +59,78 @@ class ProcedureController extends Controller
             ], 500);
         }
     }
+
+    public function addFilm(Request $request)
+    {
+        try {
+            $title = $request->input('title', '');
+            $description = $request->input('description', '');
+            $type = $request->input('type', '');
+            $duration = $type === 'LE' ? $request->input('duration', null) : null;
+            $releaseDate = $type === 'LE' ? $request->input('releaseDate', null) : null;
+            $episodes = $type === 'BO' ? $request->input('episodes', null) : null;
+
+            $result = DB::select("
+                CALL AddFilm(
+                    :title,
+                    :description, 
+                    :type, 
+                    :duration, 
+                    :releaseDate, 
+                    :episodes
+                )", [
+                'title' => $title,
+                'description' => $description,
+                'type' => $type,
+                'duration' => $duration,
+                'releaseDate' => $releaseDate,
+                'episodes' => $episodes,
+            ]);
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
+        } catch (QueryException $e) {
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+    
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);
+        }
+    }
+
+    public function deleteFilm(Request $request)
+    {
+        try {
+            $filmId = $request->input('filmId'); // Lấy Film ID từ request
+
+            $result = DB::select("
+                CALL DeleteFilm(
+                    :filmId
+                )", [
+                'filmId' => $filmId,
+            ]);
+
+        return response()->json([
+            'error' => false,
+            'message' => $result,
+        ]);
+        } catch (QueryException $e) {
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'Đã xảy ra lỗi khi xóa phim.';
+
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);    
+        } 
+    }
+
+
     public function callGetFilmsByCategory(Request $request)
     {
         try {
@@ -79,6 +151,56 @@ class ProcedureController extends Controller
             preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
             $readableMessage = $matches[1] ?? 'An unknown error occurred.';
 
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);
+        }
+    }
+
+    public function toggleFollow(Request $request)
+    {
+        $validated = $request->validate([
+            'sharer_id' => 'required|integer',
+            'shared_id' => 'required|integer',
+            'fav_id' => 'required|integer',
+        ]);
+
+        $sharer_id = $validated['sharer_id'];
+        $shared_id = $validated['shared_id'];
+        $fav_id = $validated['fav_id'];
+
+        try {
+
+            $result = DB::select('CALL ToggleShare(?, ?, ?)', [
+                $sharer_id,
+                $shared_id,
+                $fav_id,
+            ]);
+
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
+        } catch (QueryException $e) {
+
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+
+            if (strpos($readableMessage, 'Followed successfully') !== false) {
+                return response()->json([
+                    'error' => false,
+                    'message' => 'Followed successfully',
+                ]);
+            }
+            if (strpos($readableMessage, 'Unfollowed successfully') !== false) {
+                return response()->json([
+                    'error' => false,
+                    'message' => 'Unfollowed successfully',
+                ]);
+            }
+    
             return response()->json([
                 'error' => true,
                 'message' => $readableMessage,
