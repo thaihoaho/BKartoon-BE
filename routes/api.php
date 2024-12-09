@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('posts', [PostController::class, 'get']);
 Route::post('addfilm', [ProcedureController::class, 'callAddFilmProcedure']);
+Route::post('ranking', [ProcedureController::class, 'callGetFilmsByCategory']);
+
 Route::get('director', [FilmDirectoryController::class, 'index']);
 Route::get('director/name', [FilmDirectoryController::class, 'name']);
 Route::get('studio/name', [StudioController::class, 'name']);

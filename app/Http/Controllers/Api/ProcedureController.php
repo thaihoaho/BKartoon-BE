@@ -12,8 +12,6 @@ class ProcedureController extends Controller
 {
     public function callAddFilmProcedure(Request $request)
     {
-        print_r($request->all());
-
         try {
             $description = $request->input('description', '');
             $title = $request->input('title', '');
@@ -51,13 +49,39 @@ class ProcedureController extends Controller
             ]);
         } catch (QueryException $e) {
 
-            // $fullMessage = $e->getMessage();
-            // preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
-            // $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
     
             return response()->json([
                 'error' => true,
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function callGetFilmsByCategory(Request $request)
+    {
+        try {
+            $categoryName = $request->input('category_name', NULL);
+
+            $result = DB::select("CALL GetFilmsByCategory(:category_name);", [
+                'category_name' => $categoryName,
+            ]);
+            
+
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
+        } catch (QueryException $e) {
+
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
             ], 500);
         }
     }
