@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('posts', [PostController::class, 'get']);
 Route::post('addfilm', [ProcedureController::class, 'callAddFilmProcedure']);
-
-
+Route::post('addfilm2', [ProcedureController::class, 'addFilm']);
+Route::delete('deletefilm', [ProcedureController::class, 'deleteFilm']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout']);
