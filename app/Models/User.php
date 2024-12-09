@@ -45,4 +45,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    protected static function booted()
+    {
+    static::creating(function ($user) {
+        $user->reputation_score = $user->reputation_score ?? 0;
+    });
+    }
+
+
 }
