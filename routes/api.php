@@ -28,3 +28,5 @@ Route::get('studio/name', [StudioController::class, 'name']);
 Route::get('films', [FilmController::class, 'index']);
 
 Route::get('user-profile/{userId}', [UserProfileController::class, 'getUserProfile']);
+
+Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);

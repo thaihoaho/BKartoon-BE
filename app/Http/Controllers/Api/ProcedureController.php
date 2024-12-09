@@ -85,4 +85,54 @@ class ProcedureController extends Controller
             ], 500);
         }
     }
+
+    public function toggleFollow(Request $request)
+    {
+        $validated = $request->validate([
+            'sharer_id' => 'required|integer',
+            'shared_id' => 'required|integer',
+            'fav_id' => 'required|integer',
+        ]);
+
+        $sharer_id = $validated['sharer_id'];
+        $shared_id = $validated['shared_id'];
+        $fav_id = $validated['fav_id'];
+
+        try {
+
+            $result = DB::select('CALL ToggleShare(?, ?, ?)', [
+                $sharer_id,
+                $shared_id,
+                $fav_id,
+            ]);
+
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
+        } catch (QueryException $e) {
+
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+
+            if (strpos($readableMessage, 'Followed successfully') !== false) {
+                return response()->json([
+                    'error' => false,
+                    'message' => 'Followed successfully',
+                ]);
+            }
+            if (strpos($readableMessage, 'Unfollowed successfully') !== false) {
+                return response()->json([
+                    'error' => false,
+                    'message' => 'Unfollowed successfully',
+                ]);
+            }
+    
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);
+        }
+    }
 }    
