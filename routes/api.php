@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\ProcedureController;
 use App\Http\Controllers\FilmController;
 use App\Http\Controllers\FilmDirectoryController;
 use App\Http\Controllers\PostController;
-
+use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\StudioController;
@@ -17,6 +17,7 @@ Route::post('addfilm', [ProcedureController::class, 'callAddFilmProcedure']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::post('ranking', [ProcedureController::class, 'callGetFilmsByCategory']);
 
@@ -26,3 +27,4 @@ Route::get('studio/name', [StudioController::class, 'name']);
 
 Route::get('films', [FilmController::class, 'index']);
 
+Route::get('user-profile/{userId}', [UserProfileController::class, 'getUserProfile']);
