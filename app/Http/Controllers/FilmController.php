@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Character;
 use App\Models\Film;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FilmController extends Controller
 {
@@ -11,5 +13,20 @@ class FilmController extends Controller
     {
         $films = Film::all();
         return response()->json($films);
+    }
+
+    public function infoMovie($id)
+    {
+        $film = Film::find($id)->load('movie', 'series', 'filmDirectories', 'studio', 'categories', 'rating');
+
+        $characters = Character::where('FILM_ID', $id)
+            ->with('voiceActors')
+            ->get();
+        $film->character = $characters;
+
+        if ($film->FILM_Type == "BO"){
+            unset($film->movie);
+        }
+        return response()->json($film);
     }
 };
