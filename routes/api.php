@@ -25,7 +25,7 @@ Route::get('director', [FilmDirectoryController::class, 'index']);
 Route::get('director/name', [FilmDirectoryController::class, 'name']);
 Route::get('studio/name', [StudioController::class, 'name']);
 
-Route::get('films', [FilmController::class, 'index']);
+Route::get('movie/{id}', [FilmController::class, 'infoMovie']);
 
 Route::get('user-profile/{userId}', [UserProfileController::class, 'getUserProfile']);
 
