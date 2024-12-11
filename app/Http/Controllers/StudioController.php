@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Studio;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use PHPUnit\Framework\MockObject\Builder\Stub;
 
 class StudioController extends Controller
 {
@@ -19,6 +21,11 @@ class StudioController extends Controller
         return response()->json($names);
     }
 
+    public function info($id)
+    {
+        $studio = Studio::with(['produces.film'])->find($id);
+        return response()->json($studio);
+    }
    
     public function store(Request $request)
     {
@@ -55,5 +62,24 @@ class StudioController extends Controller
         $studio->delete();
 
         return response()->json(['message' => 'Studio deleted successfully']);
+    }
+
+    public function getStudioBudget($studioName, $year)
+    {
+        try {
+            $result = DB::select('SELECT CalculateStudioBudget(:studioName, :year) AS budget',[
+                'studioName' => $studioName,
+                'year' => $year
+            ]);
+
+            if (!empty($result)) {
+                $budget = $result[0]->budget; 
+                return response()->json($budget);
+            } else {
+                return response()->json(0);
+            }
+        } catch (\Exception $e) {
+            return response()->json(0);
+        }
     }
 }

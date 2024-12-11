@@ -28,4 +28,6 @@ class Produce extends Model
     {
         return $this->belongsTo(Studio::class, 'STU_ID', 'STU_ID');
     }
+
+    
 }

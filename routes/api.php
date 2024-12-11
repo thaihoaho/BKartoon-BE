@@ -23,7 +23,11 @@ Route::post('ranking', [ProcedureController::class, 'callGetFilmsByCategory']);
 
 Route::get('director', [FilmDirectoryController::class, 'index']);
 Route::get('director/name', [FilmDirectoryController::class, 'name']);
+
+Route::get('studio', [StudioController::class, 'index']);
 Route::get('studio/name', [StudioController::class, 'name']);
+Route::get('studio/{id}', [StudioController::class, 'info']);
+Route::get('studio/budget/{studioName}/{year}', [StudioController::class, 'getStudioBudget']);
 
 Route::get('movie/{id}', [FilmController::class, 'infoMovie']);
 

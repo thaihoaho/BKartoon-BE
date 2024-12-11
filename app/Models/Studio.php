@@ -13,4 +13,14 @@ class Studio extends Model
     protected $fillable = ['STU_Name'];
 
     protected $primaryKey = 'STU_ID';
+
+    public function films()
+    {
+        return $this->hasManyThrough(Film::class, Produce::class, 'STU_ID', 'FILM_ID', 'STU_ID', 'FILM_ID');
+    }
+
+    public function produces()
+{
+    return $this->hasMany(Produce::class, 'STU_ID', 'STU_ID');
+}
 }
