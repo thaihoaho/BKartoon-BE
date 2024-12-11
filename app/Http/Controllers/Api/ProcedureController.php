@@ -352,5 +352,44 @@ class ProcedureController extends Controller
         }
     }
 
+    public function getHotFilmsByMonthYear(Request $request)
+    {
+        try {
+            // Lấy các tham số từ request
+            $month = $request->input('month', null);
+            $year = $request->input('year', null);
+            $minAverage = 8;
+
+            if (is_null($month) || is_null($year)) {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Month and Year are required.',
+                ], 400);
+            }
+
+            $result = DB::select("
+                CALL GetHotFilmsByMonthYear(:month, :year, :min_average)
+            ", [
+                'month' => $month,
+                'year' => $year,
+                'min_average' => $minAverage,
+            ]);
+
+            return response()->json([
+                'error' => false,
+                'data' => $result,
+            ]);
+        } catch (QueryException $e) {
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+            
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);
+        }
+    }
+
 
 }    

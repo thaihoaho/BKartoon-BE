@@ -38,3 +38,5 @@ Route::get('films', [FilmController::class, 'index']);
 Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);
 
 Route::post('addrating', [ProcedureController::class, 'addRating']);
+
+Route::post('HotFilms', [ProcedureController::class, 'getHotFilmsByMonthYear']);
