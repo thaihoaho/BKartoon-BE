@@ -9,7 +9,52 @@ use Illuminate\Database\QueryException;
 
 
 class ProcedureController extends Controller
+{   
+    public function addRating(Request $request)
 {
+    try {
+        // Lấy các giá trị từ request
+        $userId = $request->input('user_id', null);
+        $filmId = $request->input('film_id', null);
+        $point = $request->input('point', null);
+        $comment = $request->input('comment', '');
+        // Thực hiện gọi thủ tục AddRating
+        $result = DB::select("
+            CALL AddOrUpdateRating(
+                :user_id,
+                :film_id,
+                :point,
+                :comment
+            )", [
+            'user_id' => $userId,
+            'film_id' => $filmId,
+            'point' => $point,
+            'comment' => $comment,
+        ]);
+
+        // Trả về kết quả thành công
+        return response()->json([
+            'error' => false,
+            'message' => $result,
+
+        ]);
+    } catch (QueryException $e) {
+        // Xử lý lỗi từ cơ sở dữ liệu
+        $fullMessage = $e->getMessage();
+        preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+        $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+        if (strpos($readableMessage, 'Rating ') !== false) {
+                return response()->json([
+                    'error' => false,
+                    'message' => 'Rating trước kia của bạn đã được cập nhật lại.',
+                ]);
+        }
+        return response()->json([
+            'error' => true,
+            'message' => $readableMessage,
+        ], 500);
+    }
+}
     public function callAddFilmProcedure(Request $request)
     {
         try {
@@ -306,4 +351,6 @@ class ProcedureController extends Controller
         ], 500);
         }
     }
+
+
 }    
