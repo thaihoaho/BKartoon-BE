@@ -129,7 +129,37 @@ class ProcedureController extends Controller
             ], 500);    
         } 
     }
+    public function updateFilm(Request $request)
+    {
+        try {
+            $filmId = $request->input('filmId'); // Lấy Film ID từ request
+            $title = $request->input('title', '');
+            $description = $request->input('description', '');
+            $result = DB::select("
+                CALL UpdateFilm(
+                    :filmId,
+                    :title,
+                    :description
+                )", [
+                'filmId' => $filmId,
+                'title' => $title,
+                'description' => $description,
+            ]);
+        return response()->json([
+            'error' => false,
+            'message' => $result,
+        ]);
+        } catch (QueryException $e) {
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'Đã xảy ra lỗi khi xóa phim.';
 
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);    
+        } 
+    }
 
     public function callGetFilmsByCategory(Request $request)
     {
@@ -205,6 +235,75 @@ class ProcedureController extends Controller
                 'error' => true,
                 'message' => $readableMessage,
             ], 500);
+        }
+    }
+
+    public function addCategory(Request $request)   {
+        try {
+        $filmId = $request->input('filmId'); 
+        $name = $request->input('name', '');
+        $description = $request->input('description', '');
+        $result = DB::select("
+                CALL AddCategoryAndLinkToFilm(
+                    :filmId,
+                    :name,
+                    :description
+                )", [
+                'filmId' => $filmId,
+                'name' => $name,
+                'description' => $description,
+            ]);
+            return response()->json([
+            'error' => false,
+            'message' => $result,
+        ]);
+        } catch (QueryException $e) {
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'Đã xảy ra lỗi không xác định.';
+
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);  
+        }
+    }
+    public function addCharacter(Request $request)
+    {
+    try {
+        // Lấy dữ liệu từ request
+        $filmId = $request->input('filmId'); 
+        $characterName = $request->input('name', '');
+        $characterSex = $request->input('sex', '');
+
+        // Gọi stored procedure để thêm nhân vật
+        $result = DB::select("
+            CALL AddCharacter(
+                :filmId,
+                :characterName,
+                :characterSex
+            )", [
+            'filmId' => $filmId,
+            'characterName' => $characterName,
+            'characterSex' => $characterSex,
+        ]);
+
+        // Trả về JSON nếu thành công
+        return response()->json([
+            'error' => false,
+            'message' => $result,
+        ]);
+    } catch (QueryException $e) {
+        // Lấy thông báo lỗi dễ đọc từ exception
+        $fullMessage = $e->getMessage();
+        preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+        $readableMessage = $matches[1] ?? 'Đã xảy ra lỗi không xác định.';
+
+        // Trả về JSON nếu có lỗi
+        return response()->json([
+            'error' => true,
+            'message' => $readableMessage,
+        ], 500);
         }
     }
 }    

@@ -12,8 +12,14 @@ use App\Http\Controllers\StudioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('posts', [PostController::class, 'get']);
-Route::post('addfilm', [ProcedureController::class, 'callAddFilmProcedure']);
+// Route::post('addfilm', [ProcedureController::class, 'callAddFilmProcedure']);
 Route::post('addfilm2', [ProcedureController::class, 'addFilm']);
+Route::post('addcategory', [ProcedureController::class, 'addCategory']);
+
+Route::post('addcharacter', [ProcedureController::class, 'addCharacter']);
+
+Route::post('updateFilm', [ProcedureController::class, 'updateFilm']);
+
 Route::delete('deletefilm', [ProcedureController::class, 'deleteFilm']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -28,5 +34,5 @@ Route::get('studio/name', [StudioController::class, 'name']);
 Route::get('movie/{id}', [FilmController::class, 'infoMovie']);
 
 Route::get('user-profile/{userId}', [UserProfileController::class, 'getUserProfile']);
-
+Route::get('films', [FilmController::class, 'index']);
 Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);
