@@ -26,7 +26,18 @@ class FilmController extends Controller
 
         if ($film->FILM_Type == "BO"){
             unset($film->movie);
-        }
+        } else unset($film->series);
+
+        $result = DB::select('SELECT CalculateFilmAverage(:id) AS AverageRating;', [
+            'id' => $id
+        ]);
+
+        if (!empty($result)) {
+            $point = $result[0]->AverageRating;
+        } 
+        $film->setAttribute('averageRating', $point);
+
         return response()->json($film);
     }
+
 };

@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\StudioController;
-
+use App\Models\FilmDirectory;
 use Illuminate\Support\Facades\Route;
 
 Route::get('posts', [PostController::class, 'get']);
@@ -44,5 +44,6 @@ Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);
 Route::post('addrating', [ProcedureController::class, 'addRating']);
 Route::post('adddirect', [ProcedureController::class, 'addToDirect']);
 Route::post('addproduce', [ProcedureController::class, 'addToProduce']);
+
 
 Route::post('HotFilms', [ProcedureController::class, 'getHotFilmsByMonthYear']);
