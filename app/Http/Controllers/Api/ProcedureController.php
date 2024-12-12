@@ -6,55 +6,57 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Response;
+
 
 
 class ProcedureController extends Controller
-{   
-    public function addRating(Request $request)
 {
-    try {
-        // Lấy các giá trị từ request
-        $userId = $request->input('user_id', null);
-        $filmId = $request->input('film_id', null);
-        $point = $request->input('point', null);
-        $comment = $request->input('comment', '');
-        // Thực hiện gọi thủ tục AddRating
-        $result = DB::select("
+    public function addRating(Request $request)
+    {
+        try {
+            // Lấy các giá trị từ request
+            $userId = $request->input('user_id', null);
+            $filmId = $request->input('film_id', null);
+            $point = $request->input('point', null);
+            $comment = $request->input('comment', '');
+            // Thực hiện gọi thủ tục AddRating
+            $result = DB::select("
             CALL AddOrUpdateRating(
                 :user_id,
                 :film_id,
                 :point,
                 :comment
             )", [
-            'user_id' => $userId,
-            'film_id' => $filmId,
-            'point' => $point,
-            'comment' => $comment,
-        ]);
+                'user_id' => $userId,
+                'film_id' => $filmId,
+                'point' => $point,
+                'comment' => $comment,
+            ]);
 
-        // Trả về kết quả thành công
-        return response()->json([
-            'error' => false,
-            'message' => $result,
+            // Trả về kết quả thành công
+            return response()->json([
+                'error' => false,
+                'message' => $result,
 
-        ]);
-    } catch (QueryException $e) {
-        // Xử lý lỗi từ cơ sở dữ liệu
-        $fullMessage = $e->getMessage();
-        preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
-        $readableMessage = $matches[1] ?? 'An unknown error occurred.';
-        if (strpos($readableMessage, 'Rating ') !== false) {
+            ]);
+        } catch (QueryException $e) {
+            // Xử lý lỗi từ cơ sở dữ liệu
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
+            if (strpos($readableMessage, 'Rating ') !== false) {
                 return response()->json([
                     'error' => false,
                     'message' => 'Rating trước kia của bạn đã được cập nhật lại.',
                 ]);
+            }
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);
         }
-        return response()->json([
-            'error' => true,
-            'message' => $readableMessage,
-        ], 500);
     }
-}
     public function callAddFilmProcedure(Request $request)
     {
         try {
@@ -87,7 +89,7 @@ class ProcedureController extends Controller
                 'directors' => $directors,
                 'studios' => $studios,
             ]);
-    
+
             return response()->json([
                 'error' => false,
                 'message' => $result,
@@ -97,7 +99,7 @@ class ProcedureController extends Controller
             $fullMessage = $e->getMessage();
             preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
             $readableMessage = $matches[1] ?? 'An unknown error occurred.';
-    
+
             return response()->json([
                 'error' => true,
                 'message' => $e->getMessage(),
@@ -139,7 +141,7 @@ class ProcedureController extends Controller
             $fullMessage = $e->getMessage();
             preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
             $readableMessage = $matches[1] ?? 'An unknown error occurred.';
-    
+
             return response()->json([
                 'error' => true,
                 'message' => $readableMessage,
@@ -159,10 +161,10 @@ class ProcedureController extends Controller
                 'filmId' => $filmId,
             ]);
 
-        return response()->json([
-            'error' => false,
-            'message' => $result,
-        ]);
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
         } catch (QueryException $e) {
             $fullMessage = $e->getMessage();
             preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
@@ -171,8 +173,8 @@ class ProcedureController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => $readableMessage,
-            ], 500);    
-        } 
+            ], 500);
+        }
     }
     public function updateFilm(Request $request)
     {
@@ -190,10 +192,10 @@ class ProcedureController extends Controller
                 'title' => $title,
                 'description' => $description,
             ]);
-        return response()->json([
-            'error' => false,
-            'message' => $result,
-        ]);
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
         } catch (QueryException $e) {
             $fullMessage = $e->getMessage();
             preg_match('/\d{4} (.+?)\!/', $fullMessage, $matches);
@@ -202,8 +204,8 @@ class ProcedureController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => $readableMessage,
-            ], 500);    
-        } 
+            ], 500);
+        }
     }
 
     public function callGetFilmsByCategory(Request $request)
@@ -214,7 +216,7 @@ class ProcedureController extends Controller
             $result = DB::select("CALL GetFilmsByCategory(:category_name);", [
                 'category_name' => $categoryName,
             ]);
-            
+
 
             return response()->json([
                 'error' => false,
@@ -275,7 +277,7 @@ class ProcedureController extends Controller
                     'message' => 'Unfollowed successfully',
                 ]);
             }
-    
+
             return response()->json([
                 'error' => true,
                 'message' => $readableMessage,
@@ -283,12 +285,13 @@ class ProcedureController extends Controller
         }
     }
 
-    public function addCategory(Request $request)   {
+    public function addCategory(Request $request)
+    {
         try {
-        $filmId = $request->input('filmId'); 
-        $name = $request->input('name', '');
-        $description = $request->input('description', '');
-        $result = DB::select("
+            $filmId = $request->input('filmId');
+            $name = $request->input('name', '');
+            $description = $request->input('description', '');
+            $result = DB::select("
                 CALL AddCategoryAndLinkToFilm(
                     :filmId,
                     :name,
@@ -299,9 +302,9 @@ class ProcedureController extends Controller
                 'description' => $description,
             ]);
             return response()->json([
-            'error' => false,
-            'message' => $result,
-        ]);
+                'error' => false,
+                'message' => $result,
+            ]);
         } catch (QueryException $e) {
             $fullMessage = $e->getMessage();
             preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
@@ -310,47 +313,89 @@ class ProcedureController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => $readableMessage,
-            ], 500);  
+            ], 500);
         }
     }
     public function addCharacter(Request $request)
     {
-    try {
-        // Lấy dữ liệu từ request
-        $filmId = $request->input('filmId'); 
-        $characterName = $request->input('name', '');
-        $characterSex = $request->input('sex', '');
+        try {
+            $filmId = $request->input('filmId');
+            $characterName = $request->input('name', '');
+            $characterSex = $request->input('sex', '');
 
-        // Gọi stored procedure để thêm nhân vật
-        $result = DB::select("
+            $result = DB::select("
             CALL AddCharacter(
                 :filmId,
                 :characterName,
                 :characterSex
             )", [
-            'filmId' => $filmId,
-            'characterName' => $characterName,
-            'characterSex' => $characterSex,
-        ]);
+                'filmId' => $filmId,
+                'characterName' => $characterName,
+                'characterSex' => $characterSex,
+            ]);
 
-        // Trả về JSON nếu thành công
-        return response()->json([
-            'error' => false,
-            'message' => $result,
-        ]);
-    } catch (QueryException $e) {
-        // Lấy thông báo lỗi dễ đọc từ exception
-        $fullMessage = $e->getMessage();
-        preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
-        $readableMessage = $matches[1] ?? 'Đã xảy ra lỗi không xác định.';
+            return response()->json([
+                'error' => false,
+                'message' => $result,
+            ]);
+        } catch (QueryException $e) {
+            // Lấy thông báo lỗi dễ đọc từ exception
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'Đã xảy ra lỗi không xác định.';
 
-        // Trả về JSON nếu có lỗi
-        return response()->json([
-            'error' => true,
-            'message' => $readableMessage,
-        ], 500);
+            // Trả về JSON nếu có lỗi
+            return response()->json([
+                'error' => true,
+                'message' => $readableMessage,
+            ], 500);
         }
     }
 
+    public function addToDirect(Request $request)
+    {
 
-}    
+        try {
+            DB::statement('CALL AddToDirect(?, ?, ?, ?)', [
+                $request->FILM_ID,
+                $request->DIC_ID,
+                $request->START_DATE,
+                $request->END_DATE
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Record added successfully',
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add record',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function addToProduce(Request $request)
+    {
+        try {
+            DB::statement('CALL AddToProduce(?, ?, ?, ?, ?)', [
+                $request->FILM_ID,
+                $request->STU_ID,
+                $request->START_DATE,
+                $request->END_DATE,
+                $request->BUDGET
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Record added successfully'
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add record',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+}

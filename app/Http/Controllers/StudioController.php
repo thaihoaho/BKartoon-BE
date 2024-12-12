@@ -14,9 +14,16 @@ class StudioController extends Controller
         $studios = Studio::all();
         return response()->json($studios);
     }
+    // public function name()
+    // {
+    //     $names = Studio::pluck('STU_Name');
+
+    //     return response()->json($names);
+    // }
+
     public function name()
     {
-        $names = Studio::pluck('STU_Name');
+        $names = Studio::select('STU_ID', 'STU_Name')->get();
 
         return response()->json($names);
     }
@@ -26,7 +33,7 @@ class StudioController extends Controller
         $studio = Studio::with(['produces.film'])->find($id);
         return response()->json($studio);
     }
-   
+
     public function store(Request $request)
     {
         $request->validate([
@@ -67,13 +74,13 @@ class StudioController extends Controller
     public function getStudioBudget($studioName, $year)
     {
         try {
-            $result = DB::select('SELECT CalculateStudioBudget(:studioName, :year) AS budget',[
+            $result = DB::select('SELECT CalculateStudioBudget(:studioName, :year) AS budget', [
                 'studioName' => $studioName,
                 'year' => $year
             ]);
 
             if (!empty($result)) {
-                $budget = $result[0]->budget; 
+                $budget = $result[0]->budget;
                 return response()->json($budget);
             } else {
                 return response()->json(0);

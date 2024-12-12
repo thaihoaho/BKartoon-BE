@@ -39,6 +39,8 @@ Route::get('movie/{id}', [FilmController::class, 'infoMovie']);
 
 Route::get('user-profile/{userId}', [UserProfileController::class, 'getUserProfile']);
 Route::get('films', [FilmController::class, 'index']);
-Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);
 
+Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);
 Route::post('addrating', [ProcedureController::class, 'addRating']);
+Route::post('adddirect', [ProcedureController::class, 'addToDirect']);
+Route::post('addproduce', [ProcedureController::class, 'addToProduce']);

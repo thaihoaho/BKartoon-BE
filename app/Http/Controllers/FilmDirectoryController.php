@@ -16,19 +16,22 @@ class FilmDirectoryController extends Controller
 
     public function name()
     {
-        $names = FilmDirectory::all()->map(function ($film) {
-            return
-                trim(
+        $names = FilmDirectory::all()->map(function ($dic) {
+            return [
+                'DIC_ID' => $dic->DIC_ID,
+                'Name' => trim(
                     join(' ', array_filter([
-                        $film->FName,
-                        $film->MName,
-                        $film->LName
+                        $dic->FName,
+                        $dic->MName,
+                        $dic->LName
                     ]))
-                );
+                ),
+            ];
         });
-
+    
         return response()->json($names);
     }
+    
 
     // Lưu một mục mới vào bảng
     public function store(Request $request)
