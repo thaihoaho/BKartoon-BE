@@ -44,3 +44,5 @@ Route::post('toggle-follow', [ProcedureController::class, 'toggleFollow']);
 Route::post('addrating', [ProcedureController::class, 'addRating']);
 Route::post('adddirect', [ProcedureController::class, 'addToDirect']);
 Route::post('addproduce', [ProcedureController::class, 'addToProduce']);
+
+Route::post('HotFilms', [ProcedureController::class, 'getHotFilmsByMonthYear']);
