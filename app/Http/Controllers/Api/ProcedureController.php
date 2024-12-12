@@ -406,11 +406,13 @@ class ProcedureController extends Controller
                 'message' => 'Record added successfully',
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
-
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add record',
-                'error' => $e->getMessage()
+                'error' => $readableMessage,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -430,10 +432,13 @@ class ProcedureController extends Controller
                 'message' => 'Record added successfully'
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
+            $fullMessage = $e->getMessage();
+            preg_match('/\d{4} (.+?)\./', $fullMessage, $matches);
+            $readableMessage = $matches[1] ?? 'An unknown error occurred.';
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add record',
-                'error' => $e->getMessage()
+                'error' => $readableMessage,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
